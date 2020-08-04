@@ -8,14 +8,14 @@ USE my_team;
 CREATE TABLE departments
 (
     id INT NOT NULL PRIMARY KEY,
-    name VARCHAR(45)
+    department VARCHAR(45)
 );
 
 -- Manager table
 CREATE TABLE managers
 (
     id INT NOT NULL PRIMARY KEY,
-    name VARCHAR(45)
+    manager VARCHAR(45)
 );
 
 -- Role table
@@ -42,7 +42,7 @@ CREATE TABLE employees
 );
 
     INSERT INTO managers
-        (id, name)
+        (id, manager)
     VALUES
         (1, "John Domer"),
         (2, "Lexi Zotov"),
@@ -68,39 +68,20 @@ CREATE TABLE employees
 
 
     INSERT INTO departments
-        (id, name)
+        (id, department)
     VALUES
         (1, "Engineering"),
         (2, "Finance"),
         (3, "Sales"),
         (4, "Legal");
 
-    SELECT first_name, last_name, title, salary
-    FROM roles JOIN employees ON employees.role_id = roles.id;
 
+    -- CREATE INDEX department_index ON employees (department_id);
+    -- CREATE INDEX role_index ON employees (role_id);
 
-
-
-
-
-
-
-
-
-
-
-
-    SELECT *
-    FROM employees;
-    SELECT *
-    FROM roles;
-    SELECT *
-    FROM departments;
-
-    SELECT first_name, last_name
+    -- View all employees and roles
+    SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.department, managers.manager
     FROM employees
-        INNER JOIN roles ON employees.role_id = roles.id;
-
-    SELECT title, salary
-    FROM roles
-        INNER JOIN departments ON role.department_id = departments.id;
+        LEFT JOIN roles ON roles.id = employees.role_id
+        LEFT JOIN departments ON departments.id = roles.department_id
+        LEFT JOIN managers ON managers.id = employees.manager_id;
