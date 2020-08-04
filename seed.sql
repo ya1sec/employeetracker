@@ -11,6 +11,13 @@ CREATE TABLE departments
     name VARCHAR(45)
 );
 
+-- Manager table
+CREATE TABLE managers
+(
+    id INT NOT NULL PRIMARY KEY,
+    name VARCHAR(45)
+);
+
 -- Role table
 CREATE TABLE roles
 (
@@ -30,20 +37,24 @@ CREATE TABLE employees
     last_name VARCHAR
     (45),
     role_id INT,
-    manager VARCHAR
+    manager_id VARCHAR
     (45) NULL    
 );
 
-
+    INSERT INTO managers
+        (id, name)
+    VALUES
+        (1, "John Domer"),
+        (2, "Lexi Zotov"),
+        (3, "Alan Clarke");
 
     INSERT INTO employees
-        (first_name, last_name, role_id, manager)
-    -- carlo yung is a manager
+        (first_name, last_name, role_id, manager_id)
     VALUES
-        ("Carlo", "Yung", 1, "John Domer"),
-        ("Lucy", "Rodriguez", 2, "John Domer"),
-        ("Mark", "Gonzalez", 3, "John Domer"),
-        ("Alexa", "Licata", 4, null),
+        ("Carlo", "Yung", 1, 1),
+        ("Lucy", "Rodriguez", 2, 1),
+        ("Mark", "Gonzalez", 3, 2),
+        ("Alexa", "Licata", 4, 3),
         ("Laura", "Garvey", 5, null);
 
     INSERT INTO roles
@@ -63,6 +74,20 @@ CREATE TABLE employees
         (2, "Finance"),
         (3, "Sales"),
         (4, "Legal");
+
+    SELECT first_name, last_name, title, salary
+    FROM roles JOIN employees ON employees.role_id = roles.id;
+
+
+
+
+
+
+
+
+
+
+
 
 
     SELECT *
