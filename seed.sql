@@ -1,32 +1,44 @@
 -- Drops the database if it exists, ---> creates database
-drop database if exists my_team;
-create database my_team;
+DROP DATABASE IF EXISTS my_team;
+CREATE DATABASE my_team;
 -- Initializes the database
-use my_team;
+USE my_team;
 -- Employee table
-create table employee
+CREATE TABLE employee
 (
-    id int not null
-    auto_increment primary key,
-    first_name varchar
+    id INT NOT NULL
+    AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR
     (30),
-    last_name varchar
+    last_name VARCHAR
     (30),
-    role_id int,
-    manager_id int
+    role_id INT,
+    manager_id INT
 );
     -- Role table
-    create table role
+    CREATE TABLE role
     (
-        id int not null primary key,
-        title varchar(30),
-        salary decimal(10,2) not null,
-        department_id int
-    );
-    -- Department table
-    create table department
-    (
-        id int not null primary key,
-        name varchar(30)
+        id INT NOT NULL PRIMARY KEY,
+        title VARCHAR(30),
+        salary DECIMAL(10,2) NOT NULL,
+        department_id INT
     );
 
+    -- Department table
+    CREATE TABLE department
+    (
+        id INT NOT NULL primary key,
+        name VARCHAR(30)
+    );
+
+    INSERT INTO employee
+        (first_name, last_name, role_id, manager_id)
+    -- carlo yung is a manager
+    VALUES
+        ("Carlo", "Yung");
+
+    INSERT INTO role
+        (title, salary, department_id)
+
+    VALUES
+        ("Manager", 150000);
