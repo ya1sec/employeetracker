@@ -1,4 +1,5 @@
 var mysql = require("mysql");
+var consoletable = require("console.table");
 
 function generateCRUD(data) {
   var connection = mysql.createConnection({
@@ -33,5 +34,7 @@ function generateCRUD(data) {
     );
   }
 }
+
+generateCRUD();
 
 module.exports = generateCRUD;
