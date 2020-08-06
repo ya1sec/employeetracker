@@ -3,6 +3,7 @@
 // NOTE DEPENDENCIES ==================================================
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const logo = require("asciiart-logo");
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -26,6 +27,18 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
   if (err) throw err;
   // run the start function after the connection is made to prompt the user
+  console.log(
+    logo({
+      name: "NUZ HQ",
+      font: "Speed",
+      lineChars: 20,
+      padding: 2,
+      margin: 3,
+      borderColor: "grey",
+      logoColor: "bold-white",
+      textColor: "red",
+    }).render()
+  );
   start();
 });
 
@@ -81,6 +94,89 @@ function addNewEmployee() {
       console.log("Employee added successfully.\n");
       start();
     });
+  });
+}
+
+async function updateEmployee() {
+  // query for the category choices
+  connection.query("SELECT * FROM employees", async (err, employees) => {
+    // get the name, category, starting bid from user
+    const { employeeName, newRole, newManager } = await inquirer.prompt([
+      {
+        type: "list",
+        message: "Choose an employees to update:",
+        name: "employeeName",
+        choices: () => {
+          return employees.map(
+            (employees) => employees.first_name + " " + employees.last_name
+          );
+        },
+      },
+      {
+        type: "rawlist",
+        message: "What is this employees's new role?",
+        name: "newRole",
+        // choices: () => {
+        //   return employees.map((employees) => employees.role_id);
+        // },
+        choices: [
+          "Senior Engineer",
+          "Junior Engineer",
+          "Accountant",
+          "Sales Lead",
+          "Lawyer",
+        ],
+        filter: (answer) => {
+          if (answer === "Senior Engineer") {
+            return 1;
+          } else if (answer === "Junior Engineer") {
+            return 2;
+          } else if (answer === "Accountant") {
+            return 3;
+          } else if (answer === "Sales Lead") {
+            return 4;
+          } else {
+            return 5;
+          }
+        },
+      },
+      {
+        type: "rawlist",
+        message: "Choose the employee's new manager:",
+        name: "newManager",
+        choices: ["John Domer", "Lexi Zotov", "Alan Clarke", "None"],
+        filter: (answer) => {
+          if (answer === "John Domer") {
+            return 1;
+          } else if (answer === "Lexi Zotov") {
+            return 2;
+          } else if (answer === "Alan Clarke") {
+            return 3;
+          } else {
+            return "null";
+          }
+        },
+      },
+    ]);
+    // const [chosenWorker] = categories.filter((cat) => cat.name === workerID);
+    console.log("Employee updated. \n");
+    connection.query(
+      "UPDATE employees SET ? WHERE ?",
+      [
+        {
+          role_id: newRole,
+          manager_id: newManager,
+        },
+        {
+          first_name: employeeName,
+        },
+      ],
+      function (err, res) {
+        if (err) throw err;
+        // Call deleteProduct AFTER the UPDATE completes
+      }
+    );
+    start();
   });
 }
 
@@ -150,23 +246,5 @@ const addEmployee = [
         return "null";
       }
     },
-  },
-];
-
-const updateEmployee = [
-  {
-    type: "input",
-    message: "What item would you like to post?",
-    name: "name",
-  },
-  {
-    type: "input",
-    message: "What category would you like to place your auction in?",
-    name: "category",
-  },
-  {
-    type: "input",
-    message: "What would you like your starting bid to be?",
-    name: "startingbid",
   },
 ];
