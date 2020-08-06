@@ -52,8 +52,8 @@ const addEmployee = [
         for (let i = 0; i < results.length; i++) {
           choiceArray.push(results[i].title);
         }
-        return choiceArray;
       });
+      return choiceArray;
     },
     // NOTE: corresponding role_id: [1,2.3,4,5]
     // NOTE: corresponding department_id: [1,1,2,3,4]
@@ -68,8 +68,8 @@ const addEmployee = [
         for (let i = 0; i < results.length; i++) {
           choiceArray.push(results[i].manager);
         }
-        return choiceArray;
       });
+      return choiceArray;
     },
     // NOTE: corresponding manager_id: [1,2.3,null]
     // NOTE: Make "None" = null

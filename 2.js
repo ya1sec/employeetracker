@@ -78,49 +78,10 @@ function addNewEmployee() {
           if (err) throw err;
         }
       );
-      //   if (answer.role === "Senior Engineer") {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       role_id: 1,
-      //     });
-      //   } else if (answer.role === "Junior Engineer") {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       role_id: 2,
-      //     });
-      //   } else if (answer.role === "Accountant") {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       role_id: 3,
-      //     });
-      //   } else if (answer.role === "Sales Lead") {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       role_id: 4,
-      //     });
-      //   } else {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       role_id: 5,
-      //     });
-      //   }
-      //   if (answer.manager === "John Domer") {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       manager_id: 1,
-      //     });
-      //   } else if (answer.manager === "Lexi Zotov") {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       manager_id: 2,
-      //     });
-      //   } else if (answer.manager === "Alan Clarke") {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       manager_id: 3,
-      //     });
-      //   } else {
-      //     connection.query("INSERT INTO employees SET ?", {
-      //       manager_id: null,
-      //     });
-      //   }
+      console.log("Employee added successfully.\n");
       start();
     });
   });
-
-  // NOTE query the roles database to
 }
 
 // NOTE question arrays for Inquirer ======================================
@@ -162,20 +123,16 @@ const addEmployee = [
     filter: (answer) => {
       if (answer === "Senior Engineer") {
         return 1;
+      } else if (answer === "Junior Engineer") {
+        return 2;
+      } else if (answer === "Accountant") {
+        return 3;
+      } else if (answer === "Sales Lead") {
+        return 4;
+      } else {
+        return 5;
       }
     },
-
-    // function () {
-    //   connection.query("SELECT * FROM roles", function (err, results) {
-    //     let choiceArray = [];
-    //     for (let i = 0; i < results.length; i++) {
-    //       choiceArray.push(results[i].title);
-    //     }
-    //     return choiceArray;
-    //   });
-    // },
-    // NOTE: corresponding role_id: [1,2.3,4,5]
-    // NOTE: corresponding department_id: [1,1,2,3,4]
   },
   {
     type: "rawlist",
@@ -185,29 +142,16 @@ const addEmployee = [
     filter: (answer) => {
       if (answer === "John Domer") {
         return 1;
+      } else if (answer === "Lexi Zotov") {
+        return 2;
+      } else if (answer === "Alan Clarke") {
+        return 3;
+      } else {
+        return "null";
       }
     },
-
-    // function () {
-    //   connection.query("SELECT * FROM managers", function (err, results) {
-    //     let choiceArray = [];
-    //     for (let i = 0; i < results.length; i++) {
-    //       choiceArray.push(results[i].manager);
-    //     }
-    //     return choiceArray;
-    //   });
-    // },
-    // NOTE: corresponding manager_id: [1,2.3,null]
-    // NOTE: Make "None" = null
   },
 ];
-// NOTE SALARY PREDETERMINED BY ROLE
-// {
-//   type: "input",
-//   message: "Enter employee's salary",
-//   name: "salary",
-//   // NOTE: salary stored in roles.salary
-// },
 
 const updateEmployee = [
   {
