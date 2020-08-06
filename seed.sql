@@ -12,7 +12,7 @@ CREATE TABLE departments
 -- Manager table
 CREATE TABLE managers
 (
-    id INT NOT NULL PRIMARY KEY,
+    id INT NULL PRIMARY KEY,
     manager VARCHAR(45)
 );
 -- Role table
@@ -41,7 +41,13 @@ CREATE TABLE employees
     VALUES
         (1, "John Domer"),
         (2, "Lexi Zotov"),
+<<<<<<< HEAD
         (3, "Alan Clarke");
+=======
+        (3, "Alan Clarke"),
+        (null, "NONE");
+
+>>>>>>> 97fca94d07f4193c25b928be284d502d3ea12080
     INSERT INTO employees
         (first_name, last_name, role_id, manager_id)
     VALUES

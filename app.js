@@ -1,9 +1,23 @@
-const inquirer = require("inquirer");
-const path = require("path");
-const fs = require("fs");
-const util = require("util");
+// NOTE DEPENDENCIES ==================================================
+var mysql = require("mysql");
+var inquirer = require("inquirer");
 
-const render = require("./generateCRUD.js");
+// create the connection information for the sql database
+var connection = mysql.createConnection({
+  host: "localhost",
+
+  // Your port; if not 3306
+  port: 3306,
+
+  // Your username
+  user: "root",
+
+  // Your password
+  password: "boolean10",
+  database: "my_team",
+});
+
+// NOTE question arrays for Inquirer ======================================
 
 const menu = {
   type: "list",
@@ -13,6 +27,7 @@ const menu = {
     "View all employees",
     "Add an employee",
     "Update an employee's info",
+    "EXIT",
   ],
 };
 
@@ -28,33 +43,44 @@ const addEmployee = [
     name: "lastname",
   },
   {
-    type: "list",
+    type: "rawlist",
     message: "Choose employee's role:",
     name: "role",
-    choices: [
-      "Senior Engineer",
-      "Junior Engineer",
-      "Accountant",
-      "Sales Lead",
-      "Accountant",
-    ],
+    choices: function () {
+      connection.query("SELECT * FROM roles", function (err, results) {
+        let choiceArray = [];
+        for (let i = 0; i < results.length; i++) {
+          choiceArray.push(results[i].title);
+        }
+        return choiceArray;
+      });
+    },
     // NOTE: corresponding role_id: [1,2.3,4,5]
     // NOTE: corresponding department_id: [1,1,2,3,4]
   },
   {
-    type: "list",
+    type: "rawlist",
     message: "Choose employee's manager:",
     name: "manager",
-    choices: ["John Domer", "Lexi Zotov", "Alan Clarke", "None"],
+    choices: function () {
+      connection.query("SELECT * FROM managers", function (err, results) {
+        let choiceArray = [];
+        for (let i = 0; i < results.length; i++) {
+          choiceArray.push(results[i].manager);
+        }
+        return choiceArray;
+      });
+    },
     // NOTE: corresponding manager_id: [1,2.3,null]
     // NOTE: Make "None" = null
   },
-  {
-    type: "input",
-    message: "Enter employee's salary",
-    name: "salary",
-    // NOTE: salary stored in roles.salary
-  },
+  // NOTE SALARY PREDETERMINED BY ROLE
+  // {
+  //   type: "input",
+  //   message: "Enter employee's salary",
+  //   name: "salary",
+  //   // NOTE: salary stored in roles.salary
+  // },
 ];
 
 const updateEmployee = [
@@ -75,65 +101,83 @@ const updateEmployee = [
   },
 ];
 
-async function nextMember() {
-  let newMember = await inquirer.prompt(nextTeamMember);
-  switch (newMember.Next) {
-    case "Software Engineer":
-      let engineerAnswers = await inquirer.prompt(engineerQuestions);
-      let engineerArr = [];
-      let engineer = new Engineer(
-        engineerAnswers.name,
-        engineerAnswers.id,
-        engineerAnswers.email,
-        engineerAnswers.github
-      );
-      engineerArr.push(engineer);
-      let htmlEngineer = render(engineerArr);
-      appendFileAsync("./output/team.html", htmlEngineer);
-      // console.log(engineerAnswers.name);
-      nextMember();
-      break;
-    case "Intern":
-      let internAnswers = await inquirer.prompt(internQuestions);
-      let internArr = [];
-      let intern = new Intern(
-        internAnswers.name,
-        internAnswers.id,
-        internAnswers.email,
-        internAnswers.school
-      );
-      internArr.push(intern);
-      let htmlIntern = render(internArr);
-      appendFileAsync("./output/team.html", htmlIntern);
-      nextMember();
-      break;
-    case "No more employees to add":
-    default:
-      return;
-  }
+// NOTE SQL/INQUIRER PROMPTS ==================================
+
+// connect to the mysql server and sql database
+connection.connect(function (err) {
+  if (err) throw err;
+  // run the start function after the connection is made to prompt the user
+  start();
+});
+
+function start() {
+  inquirer.prompt(menu).then(function (answer) {
+    if (answer.menu === "View all employees") {
+      viewAll();
+    } else if (answer.menu === "Add an employee") {
+      addNewEmployee();
+    } else if (answer.menu === "Update an employee's info") {
+      updateEmployee();
+    } else {
+      connection.end();
+    }
+  });
 }
 
-async function init() {
-  try {
-    let managerAnswers = await inquirer.prompt(managerQuestions);
-    let managerArr = [];
-
-    let manager = new Manager(
-      managerAnswers.name,
-      managerAnswers.id,
-      managerAnswers.email,
-      managerAnswers.officeNumber
-    );
-    managerArr.push(manager);
-    // console.log(managerArr);
-    let html = render(managerArr);
-    appendFileAsync("./output/team.html", html);
-    // console.log("success");
-
-    nextMember();
-  } catch (err) {
-    console.log(err);
-  }
+function viewAll() {
+  console.log("Viewing all employees...\n");
+  connection.query(
+    "SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.department, managers.manager FROM employees LEFT JOIN roles ON roles.id = employees.role_id LEFT JOIN departments ON departments.id = roles.department_id LEFT JOIN managers ON managers.id = employees.manager_id",
+    function (err, res) {
+      if (err) throw err;
+      console.table(res);
+      start();
+    }
+  );
 }
 
-init();
+function addNewEmployee() {
+  inquirer.prompt(addEmployee).then(function (answer) {
+    // let roleID = 1;
+    // let managerID = 1;
+    if (answer.role === "Senior Engineer") {
+      connection.query("INSERT INTO employees SET ?", {
+        role_id: 1,
+      });
+    } else if (answer.role === "Junior Engineer") {
+      connection.query("INSERT INTO employees SET ?", {
+        role_id: 2,
+      });
+    } else if (answer.role === "Accountant") {
+      connection.query("INSERT INTO employees SET ?", {
+        role_id: 3,
+      });
+    } else if (answer.role === "Sales Lead") {
+      connection.query("INSERT INTO employees SET ?", {
+        role_id: 4,
+      });
+    } else {
+      connection.query("INSERT INTO employees SET ?", {
+        role_id: 5,
+      });
+    }
+    if (answer.manager === "John Domer") {
+      connection.query("INSERT INTO employees SET ?", {
+        manager_id: 1,
+      });
+    } else if (answer.manager === "Lexi Zotov") {
+      connection.query("INSERT INTO employees SET ?", {
+        manager_id: 2,
+      });
+    } else if (answer.manager === "Alan Clarke") {
+      connection.query("INSERT INTO employees SET ?", {
+        manager_id: 3,
+      });
+    } else {
+      connection.query("INSERT INTO employees SET ?", {
+        manager_id: null,
+      });
+    }
+    start();
+  });
+}
