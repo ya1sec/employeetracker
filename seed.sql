@@ -18,7 +18,7 @@ CREATE TABLE managers
 -- Role table
 CREATE TABLE roles
 (
-    id INT NOT NULL PRIMARY KEY,
+    id INT NULL PRIMARY KEY,
     title VARCHAR(45),
     salary DECIMAL(10,2) NOT NULL,
     department_id INT NOT NULL
@@ -41,13 +41,8 @@ CREATE TABLE employees
     VALUES
         (1, "John Domer"),
         (2, "Lexi Zotov"),
-<<<<<<< HEAD
-        (3, "Alan Clarke");
-=======
         (3, "Alan Clarke"),
         (null, "NONE");
-
->>>>>>> 97fca94d07f4193c25b928be284d502d3ea12080
     INSERT INTO employees
         (first_name, last_name, role_id, manager_id)
     VALUES
@@ -71,8 +66,5 @@ CREATE TABLE employees
         (2, "Finance"),
         (3, "Sales"),
         (4, "Legal");
-    -- CREATE INDEX department_index ON employees (department_id);
-    -- CREATE INDEX role_index ON employees (role_id);
-    -- View all employees and roles
     SELECT employees.id, employees.first_name, employees.last_name, roles.title, roles.salary, departments.department, managers.manager
     FROM employees LEFT JOIN roles ON roles.id = employees.role_id LEFT JOIN departments ON departments.id = roles.department_id LEFT JOIN managers ON managers.id = employees.manager_id;
