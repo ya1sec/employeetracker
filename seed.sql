@@ -54,7 +54,7 @@ CREATE TABLE employees
     INSERT INTO roles
         (id, title, salary, department_id)
     VALUES
-        (1, "Senior Engineer", 150000.00, 1),
+        (1, "Lead Engineer", 150000.00, 1),
         (2, "Junior Engineer", 100000.00, 1),
         (3, "Accountant", 150000.00, 2),
         (4, "Sales Lead", 100000.00, 3),

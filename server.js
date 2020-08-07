@@ -50,6 +50,8 @@ function start() {
       addNewEmployee();
     } else if (answer.menu === "Update an employee's info") {
       updateEmployee();
+    } else if (answer.menu === "Remove an employee") {
+      removeEmployee();
     } else {
       connection.end();
     }
@@ -92,7 +94,7 @@ function addNewEmployee() {
         }
       );
       console.log("Employee added successfully.\n");
-      start();
+      viewAll();
     });
   });
 }
@@ -101,26 +103,24 @@ async function updateEmployee() {
   // query for the category choices
   connection.query("SELECT * FROM employees", async (err, employees) => {
     // get the name, category, starting bid from user
-    const { employeeName, newRole, newManager } = await inquirer.prompt([
+    const { employeeID, newRole, newManager } = await inquirer.prompt([
       {
         type: "list",
-        message: "Choose an employees to update:",
-        name: "employeeName",
+        message: "Select the ID of the employee you wish to update:",
+        name: "employeeID",
         choices: () => {
-          return employees.map(
-            (employees) => employees.first_name + " " + employees.last_name
-          );
+          return employees.map((employees) => employees.id);
         },
       },
       {
         type: "rawlist",
-        message: "What is this employees's new role?",
+        message: "What is this employee's new role?",
         name: "newRole",
         // choices: () => {
         //   return employees.map((employees) => employees.role_id);
         // },
         choices: [
-          "Senior Engineer",
+          "Lead Engineer",
           "Junior Engineer",
           "Accountant",
           "Sales Lead",
@@ -158,7 +158,7 @@ async function updateEmployee() {
         },
       },
     ]);
-    // const [chosenWorker] = categories.filter((cat) => cat.name === workerID);
+
     console.log("Employee updated. \n");
     connection.query(
       "UPDATE employees SET ? WHERE ?",
@@ -168,7 +168,7 @@ async function updateEmployee() {
           manager_id: newManager,
         },
         {
-          first_name: employeeName,
+          id: employeeID,
         },
       ],
       function (err, res) {
@@ -176,7 +176,38 @@ async function updateEmployee() {
         // Call deleteProduct AFTER the UPDATE completes
       }
     );
-    start();
+    viewAll();
+  });
+}
+
+async function removeEmployee() {
+  // query for the category choices
+  connection.query("SELECT * FROM employees", async (err, employees) => {
+    // get the name, category, starting bid from user
+    const { employeeID } = await inquirer.prompt([
+      {
+        type: "list",
+        message: "Select the ID of the employee to be removed:",
+        name: "employeeID",
+        choices: () => {
+          return employees.map((employees) => employees.id);
+        },
+      },
+    ]);
+    // const [chosenWorker] = categories.filter((cat) => cat.name === workerID);
+    console.log("Employee removed. \n");
+    connection.query(
+      "DELETE FROM employees WHERE ?",
+      [
+        {
+          id: employeeID,
+        },
+      ],
+      function (err, res) {
+        if (err) throw err;
+      }
+    );
+    viewAll();
   });
 }
 
@@ -190,6 +221,7 @@ const menu = {
     "View all employees",
     "Add an employee",
     "Update an employee's info",
+    "Remove an employee",
     "EXIT",
   ],
 };
@@ -219,7 +251,7 @@ const addEmployee = [
     filter: (answer) => {
       if (answer === "Senior Engineer") {
         return 1;
-      } else if (answer === "Junior Engineer") {
+      } else if (answer === "Lead Engineer") {
         return 2;
       } else if (answer === "Accountant") {
         return 3;
